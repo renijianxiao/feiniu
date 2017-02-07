@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>注册</title>
+		<link rel="stylesheet" href="css/comm.css" />
+		<link rel="stylesheet" href="css/common.css" />
+		<link rel="stylesheet" href="css/resign.css" />
+		<script type="text/javascript" src="Ajax.js"></script>
+		<script type="text/javascript" >
+		
+			 function main(){
+			 	//验证码
+			var arr=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9','0'];
+			var oBtn=document.getElementById('cbtn');
+			var oTxt=document.getElementById('txt');
+			
+			oBtn.onclick=function(){
+				var str='';
+				while(str.length<4){
+					var iNum=parseInt(Math.random()*100)
+					while(iNum>36){
+						iNum=parseInt(Math.random()*100)
+					}
+					str+=arr[iNum];
+				}
+				oTxt.innerHTML=str.toUpperCase();
+			}
+           
+           
+           var _reg={
+                
+                "mobile":/^1[345678]\d{9}$/g,//验证手机号
+                "mail":/^\w+@([a-z0-9-]+\.)+[a-z]+$/gi,//验证邮箱
+                "secret":/^.{6,20}$/g//验证密码
+            }
+           
+           
+            document.getElementById("mobile").onblur=function(){
+                if(_reg.mobile.test(this.value)) {
+                    var _self=this;
+                    ajaxRequest("post", "aaa/checkUser.php", true, {"condition": "mobile='" + this.value + "'"}, function (data) {
+                    	console.log(data);
+                        if (parseInt(data) > 0) {
+                            document.getElementById("mobileBox").innerHTML = "**手机号码已被注册，请重新输入！！";
+                        } else {
+                            document.getElementById("mobileBox").innerHTML = "";
+                        }
+                    });
+                }else{
+                    document.getElementById("mobileBox").innerHTML = "*手机格式不正确！！";
+                }
+                _reg.mobile.lastIndex=0;
+            }
+            document.getElementById("register").onclick=function(){
+                var pwd_f=document.getElementById("password").value;
+                var pwd_s=document.getElementById("rPassword").value;
+                if(pwd_f==pwd_s){
+                    var _params={
+                       
+                        "mobile":document.getElementById("mobile").value,
+                       
+                        "secret":document.getElementById("password").value
+                       
+                    };
+                    console.log(_params);
+                    if(_reg.mobile.test(_params.mobile) && _reg.secret.test(_params.secret)) {
+                        ajaxRequest("post", "aaa/registerUser.php", true, _params, function (data) {
+                            console.log(data);
+                            if (parseInt(data) > 0) {
+                                alert("您已顺利成为会员！！！");
+                            } else {
+                                alert("尊敬的用户您好，您注册会员操作失败，请重试，或者联系管理员！！！");
+                            }
+                        });
+                    }else{
+                        alert("尊敬的用户您好，您的基本信息不完整，为了安全请完善！！");
+                    }
+                }else{
+                    document.getElementById("comment").innerHTML="两次输入的密码不匹配，请重新输入";
+                }
+            }
+        }
+        window.onload=main;
+		</script>
+	</head>
+	<body>
+		
+	<div class="regcon">
+		<div style="height:100px"><a class="m-fnlogo fn-fl" href="#"></a><span class="m-fntit">欢迎注册</span></div>
+        
+        <div class="ui_tab">
+            <ul class="ui_tab_nav regnav">
+                <li class="uli active"><a href="#">手机注册</a></li>
+                <li class="uli"><a href="#">邮箱注册</a></li>
+                <li class="no fn-fr loginbtn">我已注册，马上<a href="#">登录&gt;</a></li>
+            </ul>
+            <div class="ui_tab_content">
+                <div class="m-fnbox ui_panel" style="display: block;">
+                    <div class="fnlogin clearfix">
+                    
+                        <div class="line">
+                            <label class="linel"><span class="dt">手机号码：</span></label>
+                            <div class="liner">
+                                <input type="text" class="inp fmobile J_cellphone" id="mobile" placeholder="请输入手机号码"><p class="fn-fl errorbox v-txt" id="mobileBox"></p>
+                            </div>
+                        </div>
+                        
+                            <div class="line">
+                                <label class="linel"><span class="dt">图形验证码：</span></label>
+                                <div class="liner">
+                                    <input type="text" class="inp imgcode J_imgcode" placeholder=""><span class="v-captcha" id="txt"></span><span>看不清？<a id="cbtn" class="cbtn" style="text-decoration: underline;">换一张</a></span><p class="fn-fl errorbox v-txt" id="imgcodeErr">验证码输入不正确</p>
+                                </div>
+                            </div>
+                        
+                        
+                        <div class="line">
+                            <label class="linel"><span class="dt">设置密码：</span></label>
+                            <div class="liner">
+                                <input type="password" class="inp fpass J_password" id="password" placeholder="6-16位大小写英文字母、数字或符号的组合" autocomplete="off" maxlength="16" orgin="6-16位大小写英文字母、数字或符号的组合">
+                                <p class="safeline"><span>安全程度：</span><span class="sz son">低</span><span class="sz">中</span><span class="sz">高</span></p>
+                            </div>
+                        </div>
+                        <div class="line">
+                            <label class="linel"><span class="dt">确认密码：</span></label>
+                            <div class="liner">
+                                <input type="password" class="inp fsecpass J_password2" id="rPassword" placeholder="请再次输入密码" autocomplete="off" maxlength="16" orgin="请再次输入密码"><p class="fn-fl errorbox v-txt" id="pwBox2">两次输入密码不一致</p>
+                            </div>
+                        </div>
+
+                        <div class="line liney clearfix">
+                            <label class="linel">&nbsp;</label>
+                            <div class="liner">
+                                <div class="clearfix checkcon">
+                                    <p class="fn-fl checktxt"><input type="checkbox" class="iyes fn-fl J_protocal"><span class="fn-fl">我已阅读并同意</span><a class="itxt fn-fl" href="#" target="_blank">《飞牛网服务协议》</a></p>
+                                      <p class="fn-fl errorbox v-txt" id="protocalBox"></p>
+
+                                </div>
+
+                                <a class="regbtn J_btn_agree" id="register" href="javascript:;">同意协议并注册</a>
+                                <p class="v-txt"><span class="fnred">请勾选</span>我已阅读并同意<a class="itxt" href="#" target="_blank">《飞牛网服务协议》</a></p>
+                                <input type="hidden" class="isQiye" name="isQiye" value="0">
+                        </div>
+                    </div>
+
+
+                    </div>
+                    </div>
+
+            </div>
+       
+        </div>
+    </div>
+
+	<div class="m-g-footer mt20" tp-area="1009" style="height: auto;">
+		<div class="site-info" tp-childarea="botinfo">
+				<div class="foot-nav">
+					<a rel="nofollow" href="#" target="_blank">公司介绍</a>|
+					<a rel="nofollow" href="#" target="_blank">飞牛招聘</a>|
+					<a rel="nofollow" href="#" target="_blank">媒体报道</a>|
+					<a href="#" target="_blank">热搜索词</a>|
+					<a href="#" target="_blank">评价中心</a>|
+					<a href="#" target="_blank">友情链接</a>|
+					<a rel="nofollow" href="#" target="_blank">商家入驻</a>|
+					<a rel="nofollow" href="#" target="_blank">招商标准</a>|
+					<a rel="nofollow" href="#" target="_blank">开放平台</a>|
+					<a rel="nofollow" href="#" style="cursor:default;text-decoration:none;">企业团购 021-36695538</a>|
+					<a rel="nofollow" href="#" style="cursor:default;text-decoration:none;">客服热线 400-920-6565</a>
+				</div>
+				<div class="link">
+					<p>
+						<a href="#" target="_blank" style="color: #666;">沪ICP备14034590号</a>　|　食品流通许可证编号：sp3100001310001023　|　酒类商品零售许可证 沪闸酒专字 第0811030108000822 </p>
+					<p>
+						出版物经营许可证编号新出发（沪）零字第Z6216号　|　快递业务经营许可证编号：沪邮20131324B　|　营业执照 </p>
+					<p>
+						Copyright © 2013-2016 飞牛网, All Rights Reserved. </p>
+				</div>
+				<div class="inline-box logowall">
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201602291526181456730778_kk-0.png">
+					</a>
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201602291612371456733557_kk-0.jpg">
+					</a>
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201602291612471456733567_kk-0.jpg">
+					</a>
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201602291612561456733576_kk-0.jpg">
+					</a>
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201602291613031456733583_kk-0.jpg">
+					</a>
+					<a href="#" class="item" target="_blank" rel="nofollow">
+						<img src="images/201611021041341478054494_kk-0.png">
+					</a>
+				</div>
+			</div>
+	</div>
+	</body>
+</html>
